@@ -9,26 +9,11 @@ namespace RobotSimulator.Models
             var x = int.Parse(xPosition);
             var y = int.Parse(yPosition);
             Position = (x, y);
-            Enum.TryParse(direction, out CardinalDirection dir);
-            CardinalDirection = dir;
-            switch (dir)
-            {
-                case CardinalDirection.North:
-                    Direction = (0, 1);
-                    break;
-                case CardinalDirection.South:
-                    Direction = (0, -1);
-                    break;
-                case CardinalDirection.East:
-                    Direction = (1, 0);
-                    break;
-                case CardinalDirection.West:
-                    Direction = (-1, 0);
-                    break;
-            }
+            Direction = CardinalDirection.ToVector[direction];
+
+  
         }
 
-        public CardinalDirection CardinalDirection { get; private set; }
         public (int X, int Y) Position { get; private set; }
 
         public (int X, int Y) Direction { get; private set; }
@@ -44,18 +29,18 @@ namespace RobotSimulator.Models
 
         public void RotateLeft()
         {
-            Position = (Position.Y * -1, Position.X);
+            Direction = (Direction.Y * -1, Direction.X);
 
         }
 
         public void RotateRight()
         {
-            Position = (Position.Y, Position.X * -1);
+            Direction = (Direction.Y, Direction.X * -1);
         }
 
         public string Report()
         {
-            return $"{Position.X},{Position.Y},{CardinalDirection}";
+            return $"{Position.X},{Position.Y},{CardinalDirection.ToCardinal[Direction]}";
         }
     }
 }

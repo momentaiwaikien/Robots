@@ -22,7 +22,7 @@ namespace RobotSimulator
                 }
                 else
                 {
-                    var parts = command.Split([" "], StringSplitOptions.RemoveEmptyEntries);
+                    var parts = command.Split(' ');
                     switch (parts[0])
                     {
                         case "EXIT":
@@ -37,10 +37,10 @@ namespace RobotSimulator
                             robot?.MoveForward();
                             break;
                         case "REPORT":
-                            robot?.Report();
+                            Console.WriteLine(robot?.Report());
                             break;
                         default:
-                            var placeCommands = parts[1].Split([','], StringSplitOptions.RemoveEmptyEntries);
+                            var placeCommands = parts[1].Split(',');
                             if (WorldMap.CheckPosition((placeCommands[0], placeCommands[1])))
                             {
                                 robot = new Robot(placeCommands[0], placeCommands[1], placeCommands[2]);
