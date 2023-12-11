@@ -1,91 +1,61 @@
-﻿namespace RobotSimulator.Models
+﻿using System;
+
+namespace RobotSimulator.Models
 {
     public class Robot
     {
-        public Robot(int xPosition, int yPosition, CardinalDirection cardinalDirection)
+        public Robot(string xPosition, string yPosition, string direction)
         {
-            XPosition = xPosition;
-            YPosition = yPosition;
-            CardinalDirection = cardinalDirection;
+            var x = int.Parse(xPosition);
+            var y = int.Parse(yPosition);
+            Position = (x, y);
+            Enum.TryParse(direction, out CardinalDirection dir);
+            CardinalDirection = dir;
+            switch (dir)
+            {
+                case CardinalDirection.North:
+                    Direction = (0, 1);
+                    break;
+                case CardinalDirection.South:
+                    Direction = (0, -1);
+                    break;
+                case CardinalDirection.East:
+                    Direction = (1, 0);
+                    break;
+                case CardinalDirection.West:
+                    Direction = (-1, 0);
+                    break;
+            }
         }
 
         public CardinalDirection CardinalDirection { get; private set; }
-        public int XPosition { get; private set; }
-        public int YPosition { get; private set; }
+        public (int X, int Y) Position { get; private set; }
 
-        public bool MoveForward()
+        public (int X, int Y) Direction { get; private set; }
+
+        public void MoveForward()
         {
-            if (CardinalDirection == CardinalDirection.North)
+            var newLocation = (Position.X + Direction.X, Position.Y + Direction.Y);
+            if (WorldMap.CheckPosition(newLocation))
             {
-                if (YPosition < WorldMap.YLength - 1)
-                {
-                    YPosition++;
-                    return true;
-                }
-
-                return false;
+                Position = newLocation;
             }
-            else if (CardinalDirection == CardinalDirection.East)
-            {
-                if (XPosition < WorldMap.XLength - 1)
-                {
-                    XPosition++;
-                    return true;
-                }
-
-                return false;
-            }
-            else if (CardinalDirection == CardinalDirection.South)
-            {
-                if (YPosition > 0)
-                {
-                    YPosition--;
-                    return true;
-                }
-
-                return false;
-            }
-            else if (CardinalDirection == CardinalDirection.West)
-            {
-                if (XPosition > 0)
-                {
-                    XPosition--;
-                    return true;
-                }
-
-                return false;
-            }
-
-            return false;
         }
 
         public void RotateLeft()
         {
-            if ( CardinalDirection == CardinalDirection.North)
-            {
-                CardinalDirection = CardinalDirection.West;
-            }
-            else
-            {
-                CardinalDirection--;
-            }
+            Position = (Position.Y * -1, Position.X);
+
         }
 
         public void RotateRight()
         {
-            if (CardinalDirection == CardinalDirection.West)
-            {
-                CardinalDirection = CardinalDirection.North;
-            }
-            else
-            {
-                CardinalDirection++;
-            }
+            Position = (Position.Y, Position.X * -1);
         }
 
         public string Report()
         {
-            return $"{XPosition},{YPosition},{CardinalDirection}";
+            return $"{Position.X},{Position.Y},{CardinalDirection}";
         }
     }
 }

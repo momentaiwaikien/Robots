@@ -1,9 +1,6 @@
 ﻿using RobotSimulator.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace RobotSimulator
 {
@@ -14,27 +11,46 @@ namespace RobotSimulator
         private 
         static void Main(string[] args)
         {
+            Robot robot = null;
             while(true)
             {
                 Console.WriteLine("Enter a command:");
-                var command = Console.ReadLine();
-                if (string.Equals(command, "exit", StringComparison.CurrentCultureIgnoreCase))
+                var command = Console.ReadLine().ToUpper();
+                if (!Regex.IsMatch(command, @"((PLACE) \d+,\d+,((NORTH)|(EAST)|(SOUTH)|(WEST)))|(REPORT)|(MOVE)|(LEFT)|(RIGHT)", RegexOptions.Singleline))
                 {
-                    break;
+                    Console.WriteLine("Invalid Command, Please try again");
                 }
                 else
                 {
-                    Console.WriteLine("You entered: " + command);
-                    if (command.StartsWith("PLACE ", StringComparison.CurrentCultureIgnoreCase))
+                    var parts = command.Split([" "], StringSplitOptions.RemoveEmptyEntries);
+                    switch (parts[0])
                     {
-                        var commandParts = command.Split(' ');
-                        
-                    }
+                        case "EXIT":
+                            return;
+                        case "LEFT":
+                            robot?.RotateLeft();
+                            break;
+                        case "RIGHT":
+                            robot?.RotateRight();
+                            break;
+                        case "MOVE":
+                            robot?.MoveForward();
+                            break;
+                        case "REPORT":
+                            robot?.Report();
+                            break;
+                        default:
+                            var placeCommands = parts[1].Split([','], StringSplitOptions.RemoveEmptyEntries);
+                            if (WorldMap.CheckPosition((placeCommands[0], placeCommands[1])))
+                            {
+                                robot = new Robot(placeCommands[0], placeCommands[1], placeCommands[2]);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Placement is out of bounds");
+                            }
+                            break;
 
-                    if (!_isRobotPlaced)
-                    {
-                        Console.WriteLine("Please place the robot using the PLACE command");
-                        Console.WriteLine("");
                     }
                 }
             }
